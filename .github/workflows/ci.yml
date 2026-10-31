@@ -16,19 +16,7 @@ jobs:
       - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
         with:
           node-version: '22.23.3'
-      - name: Verify pinned AgentKit files
-        run: |
-          node --input-type=module -e '
-            import { readFileSync } from "node:fs";
-            import { createHash } from "node:crypto";
-            const lock = JSON.parse(readFileSync(".asf/agentkit.lock.json", "utf8"));
-            for (const [path, expected] of Object.entries(lock.managedFiles)) {
-              const actual = createHash("sha256").update(readFileSync(path)).digest("hex");
-              if (actual !== expected) throw new Error(`AgentKit file drift: ${path}`);
-            }
-            console.log(`Verified ${Object.keys(lock.managedFiles).length} managed files`);
-          '
-      - name: Check generated scripts syntax
-        run: |
-          for file in .asf/agentkit/runtime/*.mjs; do node --check "$file"; done
-          bash -n .asf/agentkit/runtime/phase.sh
+      - name: Install locked dependencies without lifecycle scripts
+        run: npm ci --ignore-scripts
+      - name: Check project bootstrap and pinned AgentKit
+        run: npm run check

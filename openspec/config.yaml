@@ -1,0 +1,24 @@
+schema: spec-driven
+
+context: |
+  AlphaBinary is a local Node.js CLI and reusable core for converting PNG images
+  to binary alpha transparency and reporting pixel-level diagnostics.
+  Keep changes small and focused on the current backlog task. Preserve input
+  files and dimensions when implementing image operations. Prefer built-in
+  Node.js capabilities unless a task demonstrates a concrete need for a
+  dependency. No paid OpenCode or OpenRouter phase is authorized by this
+  configuration.
+
+rules:
+  proposal:
+    - Keep each change limited to one backlog task.
+    - Record unresolved product decisions instead of inventing behavior.
+  specs:
+    - Describe observable behavior with Given, When, and Then scenarios.
+    - Keep requirements deterministic and testable.
+  design:
+    - Prefer the smallest implementation that satisfies the accepted task.
+    - Explain any new runtime dependency and why it is needed.
+  tasks:
+    - Order implementation tasks by dependency.
+    - Include deterministic checks that can run without paid services.
