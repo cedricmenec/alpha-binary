@@ -2,21 +2,21 @@
 
 ## 1. Core boundary
 
-- [ ] 1.1 Add `src/core/index.js` with a callable `describeCore()` skeleton export that does not import CLI modules or read `process.argv`; verify with `node --input-type=module -e "import { describeCore } from './src/core/index.js'; console.log(describeCore())"` and confirm no CLI output.
-- [ ] 1.2 Add `test/core.test.js` using `node:test` to cover import, callable export, return value, and empty stdout/stderr during import; verify `node --test test/core.test.js` passes.
+- [x] 1.1 Add `src/core/index.js` with a callable `describeCore()` skeleton export that does not import CLI modules or read `process.argv`; verify with `node --input-type=module -e "import { describeCore } from './src/core/index.js'; console.log(describeCore())"` and confirm no CLI output.
+- [x] 1.2 Add `test/core.test.js` using `node:test` to cover import, callable export, return value, and empty stdout/stderr during import; verify `node --test test/core.test.js` passes.
 
 ## 2. CLI entry point and help
 
-- [ ] 2.1 Add `src/cli/index.js` with `main(argv, io)` implementing `-h`/`--help`, no-argument help, and clear unknown-command failure; add `test/cli.test.js` covering those cases and verify `node --test test/cli.test.js` passes.
-- [ ] 2.2 Add an executable `bin/alpha-binary.js` wrapper with a shebang, `process.exitCode` wiring, and no business logic; verify `node bin/alpha-binary.js --help` and `./bin/alpha-binary.js --help` both exit 0.
-- [ ] 2.3 Add a spawned-process test for `bin/alpha-binary.js` that checks help output and exit code; verify `node --test test/cli.test.js` passes.
-- [ ] 2.4 Add `bin`, `cli`, `test`, and `precheck` entries to `package.json` while leaving `check` as `node scripts/check-bootstrap.mjs`; verify `npm run cli -- --help` prints help and `npm test` passes.
+- [x] 2.1 Add `src/cli/index.js` with `main(argv, io)` implementing `-h`/`--help`, no-argument help, and clear unknown-command failure; add `test/cli.test.js` covering those cases and verify `node --test test/cli.test.js` passes.
+- [x] 2.2 Add an executable `bin/alpha-binary.js` wrapper with a shebang, `process.exitCode` wiring, and no business logic; verify `node bin/alpha-binary.js --help` and `./bin/alpha-binary.js --help` both exit 0.
+- [x] 2.3 Add a spawned-process test for `bin/alpha-binary.js` that checks help output and exit code; verify `node --test test/cli.test.js` passes.
+- [x] 2.4 Add `bin`, `cli`, `test`, and `precheck` entries to `package.json` while leaving `check` as `node scripts/check-bootstrap.mjs`; verify `npm run cli -- --help` prints help and `npm test` passes.
 
 ## 3. Integration checks
 
-- [ ] 3.1 Run `npm ci --ignore-scripts` and then `npm run check`; verify the Core and CLI tests run before the existing bootstrap assertions and the command exits 0.
-- [ ] 3.2 Confirm no dependency or publication requirement was introduced; verify `npm ls --depth=0` reports no production dependencies and `package.json` still has `"private": true` with no publish script.
-- [ ] 3.3 Confirm the change remains within the AB-002 skeleton; verify `git diff --stat` lists only the allowed source, test, and `package.json` files and does not touch workflows, OpenSpec configuration, backlog files, or `scripts/check-bootstrap.mjs`.
+- [x] 3.1 Run `npm ci --ignore-scripts` and then `npm run check`; verify the Core and CLI tests run before the existing bootstrap assertions and the command exits 0.
+- [x] 3.2 Confirm no dependency or publication requirement was introduced; verify `npm ls --depth=0` reports no production dependencies and `package.json` still has `"private": true` with no publish script.
+- [x] 3.3 Confirm the change remains within the AB-002 skeleton; verify `git diff --stat` lists only the allowed source, test, and `package.json` files and does not touch workflows, OpenSpec configuration, backlog files, or `scripts/check-bootstrap.mjs`.
 
 ## Unresolved requirements
 
