@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import { spawnSync } from 'node:child_process';
 import test from 'node:test';
 
-import { describeCore } from '../src/core/index.js';
+import { decodePng, describeCore, encodePng } from '../src/core/index.js';
 
 test('Core exports a callable skeleton function', () => {
   assert.equal(typeof describeCore, 'function');
@@ -11,6 +11,11 @@ test('Core exports a callable skeleton function', () => {
 
   assert.equal(typeof result, 'object');
   assert.equal(result.name, 'alpha-binary');
+});
+
+test('Core exports the PNG decoder and encoder', () => {
+  assert.equal(typeof decodePng, 'function');
+  assert.equal(typeof encodePng, 'function');
 });
 
 test('Core returns a frozen description', () => {
@@ -22,8 +27,9 @@ test('Core returns a frozen description', () => {
 
 test('importing and calling Core produces no output', () => {
   const code = [
-    "import { describeCore } from './src/core/index.js';",
+    "import { decodePng, describeCore, encodePng } from './src/core/index.js';",
     'describeCore();',
+    'if (typeof decodePng !== "function" || typeof encodePng !== "function") process.exit(1);',
   ].join('\n');
 
   const result = spawnSync(process.execPath, ['--input-type=module', '-e', code], {
