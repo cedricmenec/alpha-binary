@@ -23,7 +23,8 @@ function assertHelp(io) {
   assert.match(output, /alpha-binary/);
   assert.match(output, /\bconvert\b/);
   assert.match(output, /convert <source\.png> <output\.png>/);
-  assert.doesNotMatch(output, /\binspect\b/);
+  assert.match(output, /\binspect\b/);
+  assert.match(output, /inspect <source\.png>/);
   assert.doesNotMatch(output, /\bread-png\b|\bwrite-png\b|\breadPng\b|\bwritePng\b/);
   assert.equal(io.error(), '');
 }
@@ -71,7 +72,7 @@ test('bin wrapper prints help and exits 0', () => {
   assert.match(result.stdout, /Usage: alpha-binary/);
   assert.match(result.stdout, /alpha-binary/);
   assert.match(result.stdout, /\bconvert\b/);
-  assert.doesNotMatch(result.stdout, /\binspect\b/);
+  assert.match(result.stdout, /\binspect\b/);
   assert.equal(result.stderr, '');
 });
 

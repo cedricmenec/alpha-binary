@@ -167,14 +167,15 @@ test('convert rejects invalid invocations with exit code 2 and no output', (t) =
   }
 });
 
-test('top-level help advertises convert and never inspect', () => {
+test('top-level help advertises convert and inspect', () => {
   const result = runCli(['--help']);
 
   assert.equal(result.status, 0, result.stderr);
   assert.equal(result.stderr, '');
   assert.match(result.stdout, /\bconvert\b/);
   assert.match(result.stdout, /convert <source\.png> <output\.png>/);
-  assert.doesNotMatch(result.stdout, /\binspect\b/);
+  assert.match(result.stdout, /\binspect\b/);
+  assert.match(result.stdout, /inspect <source\.png>/);
 });
 
 test('convert --help lists convert usage and options, not inspect', () => {
