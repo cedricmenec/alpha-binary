@@ -187,4 +187,4 @@ npm test
 npm run check
 ```
 
-The reference acceptance suite uses the checked-in PNGs under `test/fixtures/reference/`, converts them in temporary directories, verifies binary alpha, cross-process determinism, metrics, and source immutability. The A-001 trial remains unresolved in the reference manifest because the repository does not define its fixture or expected outcomes; no substitute is used. All checks are local and non-paying.
+The reference acceptance suite uses the checked-in PNGs under `test/fixtures/reference/`, converts them in temporary directories, verifies binary alpha, RGB and dimension preservation, cross-process determinism, expected inspection metrics, and source immutability. The A-001 trial remains unresolved in the reference manifest because its original artwork is not checked in and source-specific expected outcomes remain outside the repository; no substitute is used. All checks are local and non-paying.

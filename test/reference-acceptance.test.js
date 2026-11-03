@@ -58,6 +58,17 @@ function assertOnlyBinaryAlpha(decoded) {
   return buckets;
 }
 
+function assertRgbUnchanged(source, output) {
+  assert.equal(output.width, source.width);
+  assert.equal(output.height, source.height);
+  for (let offset = 0; offset < source.pixels.length; offset += 4) {
+    const pixel = offset / 4;
+    assert.equal(output.pixels[offset], source.pixels[offset], `red at pixel ${pixel}`);
+    assert.equal(output.pixels[offset + 1], source.pixels[offset + 1], `green at pixel ${pixel}`);
+    assert.equal(output.pixels[offset + 2], source.pixels[offset + 2], `blue at pixel ${pixel}`);
+  }
+}
+
 function requireMatch(output, pattern, label) {
   const match = pattern.exec(output);
   assert.ok(match, `Missing ${label} in inspect output:\n${output}`);
@@ -190,8 +201,7 @@ for (const fixture of availableFixtures()) {
 
     const decodedSource = readDecodedFixture(fixture);
     const decodedOutput = decodePng(readFileSync(output));
-    assert.equal(decodedOutput.width, decodedSource.width);
-    assert.equal(decodedOutput.height, decodedSource.height);
+    assertRgbUnchanged(decodedSource, decodedOutput);
     assertOnlyBinaryAlpha(decodedOutput);
   });
 
@@ -252,6 +262,8 @@ for (const fixture of availableFixtures()) {
       parsedJson.alpha.zero + parsedJson.alpha.full + parsedJson.alpha.intermediate,
       parsedJson.width * parsedJson.height,
     );
+    assert.equal(parsedJson.isolatedOpaque, fixture.inspectionExpectation.isolatedOpaque);
+    assert.deepEqual(parsedJson.ratios, fixture.inspectionExpectation.ratios);
 
     assert.deepEqual(readFileSync(source), sourceBytes);
     assert.deepEqual(readdirSync(REFERENCE_DIRECTORY).sort(), beforeDirectory);
