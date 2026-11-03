@@ -23,6 +23,7 @@ function assertHelp(io) {
   assert.match(output, /alpha-binary/);
   assert.doesNotMatch(output, /\bconvert\b/);
   assert.doesNotMatch(output, /\binspect\b/);
+  assert.doesNotMatch(output, /\bread-png\b|\bwrite-png\b|\breadPng\b|\bwritePng\b/);
   assert.equal(io.error(), '');
 }
 

@@ -1,3 +1,11 @@
+export {
+  CliPngError,
+  readPng,
+  readPngFile,
+  writePng,
+  writePngFile,
+} from './png-files.js';
+
 const HELP = [
   'Usage: alpha-binary [--help]',
   '',
