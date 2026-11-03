@@ -1,3 +1,4 @@
+export { ditherAlphaBayer8 } from './dither.js';
 export { decodePng, encodePng, PngError } from './png.js';
 
 const CORE_DESCRIPTION = Object.freeze({ name: 'alpha-binary' });
