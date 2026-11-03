@@ -1,0 +1,49 @@
+{
+  "description": "Reference acceptance corpus for AB-008. Checked-in PNG bytes are the regression reference; this manifest keeps their expected observable properties readable.",
+  "fixtures": [
+    {
+      "id": "uniform-background",
+      "file": "uniform-background.png",
+      "status": "available",
+      "width": 8,
+      "height": 8,
+      "alphaExpectation": {
+        "zero": 0,
+        "intermediate": 0,
+        "full": 64
+      },
+      "uniformBackground": {
+        "red": 40,
+        "green": 120,
+        "blue": 200,
+        "alpha": 255
+      },
+      "rationale": "Small uniform opaque background suitable for exercising background removal and binary conversion."
+    },
+    {
+      "id": "partial-alpha",
+      "file": "partial-alpha.png",
+      "status": "available",
+      "width": 8,
+      "height": 8,
+      "alphaExpectation": {
+        "zero": 1,
+        "intermediate": 62,
+        "full": 1
+      },
+      "alphaCategories": {
+        "zeroPresent": true,
+        "intermediatePresent": true,
+        "fullPresent": true
+      },
+      "rationale": "Small fixture spanning alpha 0, alpha 1 through 254, and alpha 255 so binary conversion and metrics are exercised."
+    }
+  ],
+  "a001": {
+    "id": "A-001",
+    "status": "unresolved",
+    "fixture": null,
+    "expectedOutcomes": null,
+    "reason": "The repository and AB-008 task do not define the A-001 trial. Its source image, dimensions, pixels, and expected outcomes are absent, so no substitute fixture or self-invented expectation is recorded."
+  }
+}
