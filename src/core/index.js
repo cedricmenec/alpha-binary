@@ -1,3 +1,4 @@
+export { AlphaMetricsError, inspectAlpha } from './alpha-metrics.js';
 export { BackgroundError, removeUniformBackground } from './background.js';
 export { ditherAlphaBayer8 } from './dither.js';
 export { decodePng, encodePng, PngError } from './png.js';
