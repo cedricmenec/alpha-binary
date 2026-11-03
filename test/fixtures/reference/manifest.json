@@ -12,6 +12,13 @@
         "intermediate": 0,
         "full": 64
       },
+      "inspectionExpectation": {
+        "isolatedOpaque": 0,
+        "ratios": {
+          "isolatedToOpaque": 0,
+          "isolatedToTotal": 0
+        }
+      },
       "uniformBackground": {
         "red": 40,
         "green": 120,
@@ -30,6 +37,13 @@
         "zero": 1,
         "intermediate": 62,
         "full": 1
+      },
+      "inspectionExpectation": {
+        "isolatedOpaque": 1,
+        "ratios": {
+          "isolatedToOpaque": 1,
+          "isolatedToTotal": 0.015625
+        }
       },
       "alphaCategories": {
         "zeroPresent": true,
