@@ -1,0 +1,56 @@
+name: Qualify Node CLI migration candidate
+
+on:
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  qualify-node-cli:
+    if: github.head_ref == 'chore/agentkit-1.2.0-node-26'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Checkout exact qualification PR head
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          path: target
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Checkout release CLI at the reviewed immutable source SHA
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          repository: cedricmenec/asf-agent-kits
+          ref: e2a372c1a8f3a32895a6254a99d6d94e68f64fa9
+          path: catalogue
+          persist-credentials: false
+      - name: Node.js LTS 26.13.0
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version: '26.13.0'
+          cache: npm
+          cache-dependency-path: catalogue/package-lock.json
+      - name: Install the release CLI dependencies without lifecycle scripts
+        run: npm --prefix catalogue ci --ignore-scripts --no-audit --no-fund
+      - name: Run real upgrade, idempotence, rollback and overlay refusal
+        env:
+          CATALOGUE_DIR: ${{ github.workspace }}/catalogue
+          TARGET_DIR: ${{ github.workspace }}/target
+          REPORT_DIR: ${{ runner.temp }}/node-cli-migration-evidence
+        run: node target/.github/qualification/verify-node-cli-migration.mjs
+      - name: Verify the qualification application also passes on Node 26
+        working-directory: target
+        run: |
+          npm ci --ignore-scripts --no-audit --no-fund
+          npm run check
+      - name: Persist the non-paying qualification evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: node-cli-migration-evidence
+          path: ${{ runner.temp }}/node-cli-migration-evidence/*
+          if-no-files-found: error
+          retention-days: 14

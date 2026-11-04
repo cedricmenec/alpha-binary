@@ -1,0 +1,12 @@
+{
+  "schemaVersion": 1,
+  "targetRepository": "cedricmenec/alpha-binary",
+  "defaultBranch": "main",
+  "taskPrefix": "AB",
+  "taskDirectory": "backlog/tasks",
+  "checkScript": "check",
+  "appIdVar": "APP_ID",
+  "appPrivateKeySecret": "APP_PRIVATE_KEY",
+  "openRouterSecret": "OPENROUTER_API_KEY",
+  "mutexGroup": "alpha-binary-paid-development-v1"
+}
