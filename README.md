@@ -188,3 +188,9 @@ npm run check
 ```
 
 The reference acceptance suite uses the checked-in PNGs under `test/fixtures/reference/`, converts them in temporary directories, verifies binary alpha, RGB and dimension preservation, cross-process determinism, expected inspection metrics, and source immutability. The A-001 trial remains unresolved in the reference manifest because its original artwork is not checked in and source-specific expected outcomes remain outside the repository; no substitute is used. All checks are local and non-paying.
+
+## Environnement de développement
+
+Node.js 26.13.0 LTS est épinglé dans .nvmrc et la CI. npm exige >=26.13.0 <27 via engine-strict. Utiliser npm ci puis npm run check.
+
+Le kit ASF OpenCode/OpenSpec 1.2.0 est épinglé au commit e2a372c1a8f3a32895a6254a99d6d94e68f64fa9. La PR de migration vérifie une véritable mise à niveau avec la CLI Node, l'idempotence, le retour au tree initial par revert et le refus des overlays modifiés. Aucun modèle payant n'est exécuté par cette qualification.
