@@ -6,7 +6,8 @@ task_file="backlog/tasks/$TASK_ID.md"
 change="openspec/changes/$CHANGE_ID"
 test -s "$task_file"
 test -s openspec/config.yaml
-test "$PHASE" = auto || test "$PHASE" = plan || test "$PHASE" = apply || test "$PHASE" = finalize
+test "$PHASE" = auto || test "$PHASE" = plan || test "$PHASE" = apply || \
+  test "$PHASE" = finalize || test "$PHASE" = verify-plan || test "$PHASE" = repair-plan
 
 export OPENSPEC_NO_UPDATE_CHECK=1
 export OPENSPEC_NO_ANIMATION=1
@@ -26,18 +27,48 @@ if [[ "$PHASE" == plan || "$PHASE" == auto ]]; then
   {
     printf 'Plan a spec-driven change in repository %s. Read AGENTS.md if present, the task file, product specifications, and OpenSpec instructions.\n' "$GITHUB_REPOSITORY"
     printf 'Use openspec status --change %s and openspec instructions for proposal, design, specs, tasks.\n' "$CHANGE_ID"
-    printf 'Create proposal.md, design.md, specs/<capability>/spec.md and tasks.md with observable scenarios.\n'
+    printf 'Create proposal.md, design.md, specs/<capability>/spec.md with observable GIVEN/WHEN/THEN scenarios and an executable tasks.md checklist.\n'
+    printf 'In tasks.md, keep code and deterministic tests as checkboxes. Put subjective visual/human/real-device acceptance in Manual acceptance without checkboxes; do not append Verify: visual scenarios to implementation tasks.\n'
     printf 'Change ID: %s\nTask: %s\n' "$CHANGE_ID" "$TASK_ID"
     cat .asf/agentkit/openspec-checklist.md
     cat "$task_file"
     printf '\nDo not edit product code, workflows, configuration, backlog, AGENTS.md, commit, push, publish or archive.\n'
   } > "$RUNNER_TEMP/agentkit-prompt.txt"
   opencode run --auto --model "$OPENCODE_MODEL" "$(cat "$RUNNER_TEMP/agentkit-prompt.txt")"
-  for artifact in proposal.md design.md tasks.md; do test -s "$change/$artifact"; done
-  find "$change/specs" -type f -name spec.md -size +0c | grep -q .
-  openspec validate "$CHANGE_ID" --strict --no-interactive
+  # The workflow uses this switch to publish a scoped checkpoint BEFORE the
+  # quality gate. Never use it to authorize apply: verify-plan is mandatory.
+  if [[ "${ASF_PLAN_CHECKPOINT_ONLY:-0}" != 1 ]]; then
+    for artifact in proposal.md design.md tasks.md; do test -s "$change/$artifact"; done
+    find "$change/specs" -type f -name spec.md -size +0c | grep -q .
+    node "$RUNNER_TEMP/checklist.mjs" "$change/tasks.md"
+    openspec validate "$CHANGE_ID" --strict --no-interactive
+    npm run check
+  fi
+fi
+
+if [[ "$PHASE" == verify-plan ]]; then
+  for artifact in proposal.md design.md tasks.md; do
+    test -s "$change/$artifact" || { echo "::error title=ASF-PLAN-MISSING::Missing OpenSpec $artifact"; exit 1; }
+  done
+  find "$change/specs" -type f -name spec.md -size +0c | grep -q . || {
+    echo '::error title=ASF-PLAN-SPECS::Missing delta specification'; exit 1
+  }
   node "$RUNNER_TEMP/checklist.mjs" "$change/tasks.md"
+  openspec validate "$CHANGE_ID" --strict --no-interactive
   npm run check
+fi
+
+if [[ "$PHASE" == repair-plan ]]; then
+  test -d "$change" || { echo '::error title=ASF-PLAN-MISSING::Plan checkpoint absent'; exit 1; }
+  {
+    printf 'Repair ONLY the existing OpenSpec plan for task %s, change %s.\n' "$TASK_ID" "$CHANGE_ID"
+    printf 'Read the change proposal, design, delta specs, tasks.md, task description and OpenSpec contract.\n'
+    printf 'Run openspec validate --strict and the implementation checklist gate; correct structural and deterministic errors in this same invocation.\n'
+    printf 'Do not write product code or tests, perform manual acceptance, change GitHub configuration, commit, push or publish.\n'
+    cat .asf/agentkit/openspec-checklist.md
+    cat "$task_file"
+  } > "$RUNNER_TEMP/agentkit-prompt.txt"
+  opencode run --auto --model "$OPENCODE_MODEL" "$(cat "$RUNNER_TEMP/agentkit-prompt.txt")"
 fi
 
 if [[ "$PHASE" == apply || "$PHASE" == auto ]]; then
@@ -48,7 +79,7 @@ if [[ "$PHASE" == apply || "$PHASE" == auto ]]; then
     printf 'Implement ONLY the reviewed OpenSpec change %s for task %s.\n' "$CHANGE_ID" "$TASK_ID"
     printf 'Read AGENTS.md if present, task, proposal, design and delta specs; run openspec instructions apply --change %s.\n' "$CHANGE_ID"
     cat .asf/agentkit/openspec-checklist.md
-    printf 'Write implementation and deterministic tests. Run npm run check; mark [x] only verified tasks.\n'
+    printf 'Write implementation and deterministic tests. Run npm run check; mark [x] only verified tasks. Do not turn manual or post-sync review into checkboxes.\n'
     printf 'Do not modify reviewed proposal/design/delta specs, workflow, agentkit runtime, backlog, credentials or AGENTS.md.\n'
     printf 'Do not sync, archive, commit or publish: the trusted workflow does that.\n'
     cat "$task_file"
