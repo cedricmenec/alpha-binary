@@ -74,8 +74,8 @@ jobs:
             --version 1.4.0 --source "$SOURCE" --source-commit 4f9a31f94888f20a2df7b4335ec7c0f5a70d869d \
             --config "$CONFIG" --apply --expected-head "$HEAD_SHA" \
             --expected-plan-sha "$PLAN_SHA" > "$RUNNER_TEMP/apply.json"
-          node "$SOURCE/bin/asf-agentkit" status --repo "cedricmenec/alpha-binary" --checkout "$BASE" > "$RUNNER_TEMP/status.json"
-          node "$SOURCE/bin/asf-agentkit" doctor --repo "cedricmenec/alpha-binary" --checkout "$BASE" --config "$CONFIG" > "$RUNNER_TEMP/doctor.json"
+          node "$SOURCE/bin/asf-agentkit" status --repo "cedricmenec/alpha-binary" --checkout "$BASE" --kit opencode-openspec > "$RUNNER_TEMP/status.json"
+          node "$SOURCE/bin/asf-agentkit" doctor --repo "cedricmenec/alpha-binary" --checkout "$BASE" --config "$CONFIG" --kit opencode-openspec > "$RUNNER_TEMP/doctor.json"
           node - "$RUNNER_TEMP/status.json" "$RUNNER_TEMP/doctor.json" <<'NODE'
           const fs=require('fs');
           const status=JSON.parse(fs.readFileSync(process.argv[2]));
@@ -93,6 +93,13 @@ jobs:
             .asf/agentkit.lock.json; do
             cmp "$BASE/$p" "$CANDIDATE/$p"
           done
+          node "$SOURCE/bin/asf-agentkit" status --repo "cedricmenec/alpha-binary" --checkout "$BASE" --kit opencode-direct > "$RUNNER_TEMP/direct-status.json"
+          node - "$RUNNER_TEMP/direct-status.json" <<'NODE'
+          const fs=require('fs'); const v=JSON.parse(fs.readFileSync(process.argv[2]));
+          if (v.status !== 'hash-match') throw Error('Co-installed Direct profile changed');
+          console.log('Co-installed Direct profile preserved');
+          NODE
+          cmp "$BASE/.asf/agentkit/locks/opencode-direct.json" "$CANDIDATE/.asf/agentkit/locks/opencode-direct.json"
           echo "Real upgrade matches all 10 candidate PR managed files"
       - name: Verify clean 1.4.0 installation on disposable Git repository
         shell: bash
