@@ -1,0 +1,125 @@
+# Temporary, no-model qualification. Remove before merging.
+name: Qualify pinned AgentKit 1.4.0 CLI (non-paying)
+
+on:
+  pull_request:
+    paths:
+      - '.asf/agentkit.lock.json'
+      - '.github/workflows/asf-agentkit-openspec.yml'
+      - '.github/workflows/agentkit-1-4-0-proof.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    if: github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          ref: ${{ github.event.pull_request.base.sha }}
+          path: baseline
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          path: proposed
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          repository: cedricmenec/asf-agent-kits
+          ref: 4f9a31f94888f20a2df7b4335ec7c0f5a70d869d
+          path: source
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version: '26.13.0'
+      - name: Run real pinned CLI upgrade and verify exact managed bytes
+        shell: bash
+        run: |
+          set -euo pipefail
+          BASE="$GITHUB_WORKSPACE/baseline"
+          CANDIDATE="$GITHUB_WORKSPACE/proposed"
+          SOURCE="$GITHUB_WORKSPACE/source"
+          CONFIG="$RUNNER_TEMP/agentkit-config.json"
+          cat > "$CONFIG" <<'JSON'
+          {
+            "schemaVersion": 1,
+            "targetRepository": "cedricmenec/alpha-binary",
+            "defaultBranch": "main",
+            "taskPrefix": "AB",
+            "taskDirectory": "backlog/tasks",
+            "checkScript": "check",
+            "appIdVar": "APP_ID",
+            "appPrivateKeySecret": "APP_PRIVATE_KEY",
+            "openRouterSecret": "OPENROUTER_API_KEY",
+            "mutexGroup": "alpha-binary-paid-development-v1"
+          }
+          JSON
+          npm --prefix "$SOURCE" ci --ignore-scripts
+          git -C "$BASE" switch -q -c qualification/agentkit-1-4-0
+          HEAD_SHA="$(git -C "$BASE" rev-parse HEAD)"
+          node "$SOURCE/bin/asf-agentkit" upgrade \
+            --repo "cedricmenec/alpha-binary" --checkout "$BASE" --kit opencode-openspec \
+            --version 1.4.0 --source "$SOURCE" --source-commit 4f9a31f94888f20a2df7b4335ec7c0f5a70d869d \
+            --config "$CONFIG" --dry-run > "$RUNNER_TEMP/dry-run.json"
+          PLAN_SHA="$(node -p "JSON.parse(require('fs').readFileSync(process.argv[1])).planSha256" "$RUNNER_TEMP/dry-run.json")"
+          node "$SOURCE/bin/asf-agentkit" upgrade \
+            --repo "cedricmenec/alpha-binary" --checkout "$BASE" --kit opencode-openspec \
+            --version 1.4.0 --source "$SOURCE" --source-commit 4f9a31f94888f20a2df7b4335ec7c0f5a70d869d \
+            --config "$CONFIG" --apply --expected-head "$HEAD_SHA" \
+            --expected-plan-sha "$PLAN_SHA" > "$RUNNER_TEMP/apply.json"
+          node "$SOURCE/bin/asf-agentkit" status --repo "cedricmenec/alpha-binary" --checkout "$BASE" > "$RUNNER_TEMP/status.json"
+          node "$SOURCE/bin/asf-agentkit" doctor --repo "cedricmenec/alpha-binary" --checkout "$BASE" --config "$CONFIG" > "$RUNNER_TEMP/doctor.json"
+          node - "$RUNNER_TEMP/status.json" "$RUNNER_TEMP/doctor.json" <<'NODE'
+          const fs=require('fs');
+          const status=JSON.parse(fs.readFileSync(process.argv[2]));
+          const doctor=JSON.parse(fs.readFileSync(process.argv[3]));
+          if (status.status !== 'hash-match' || doctor.localChecks?.managedWorkflowPresent !== true)
+            throw Error('Installed files or doctor status mismatch');
+          console.log('Verified CLI upgrade:', status.status);
+          NODE
+          for p in \
+            .github/workflows/asf-agentkit-openspec.yml \
+            .asf/agentkit/runtime/request.mjs .asf/agentkit/runtime/scope.mjs \
+            .asf/agentkit/runtime/model-policy.mjs .asf/agentkit/runtime/checklist.mjs \
+            .asf/agentkit/runtime/phase.sh .asf/agentkit/manual-acceptance.md \
+            .asf/agentkit/openspec-checklist.md .asf/agentkit/opsx-sync-quality.md \
+            .asf/agentkit.lock.json; do
+            cmp "$BASE/$p" "$CANDIDATE/$p"
+          done
+          echo "Real upgrade matches all 10 candidate PR managed files"
+      - name: Verify clean 1.4.0 installation on disposable Git repository
+        shell: bash
+        run: |
+          set -euo pipefail
+          TARGET="$RUNNER_TEMP/fresh"
+          SOURCE="$GITHUB_WORKSPACE/source"
+          CONFIG="$RUNNER_TEMP/agentkit-config.json"
+          mkdir -p "$TARGET"
+          git -C "$TARGET" init -q -b main
+          git -C "$TARGET" remote add origin "https://github.com/cedricmenec/alpha-binary"
+          echo "Disposable qualification" > "$TARGET/README.md"
+          git -C "$TARGET" add README.md
+          git -C "$TARGET" -c user.name=Fixture -c user.email=fixture@example.invalid commit -qm baseline
+          git -C "$TARGET" switch -q -c qualification/new-install
+          HEAD_SHA="$(git -C "$TARGET" rev-parse HEAD)"
+          node "$SOURCE/bin/asf-agentkit" install \
+            --repo "cedricmenec/alpha-binary" --checkout "$TARGET" --kit opencode-openspec \
+            --version 1.4.0 --source "$SOURCE" --source-commit 4f9a31f94888f20a2df7b4335ec7c0f5a70d869d \
+            --config "$CONFIG" --dry-run > "$RUNNER_TEMP/install-plan.json"
+          node "$SOURCE/bin/asf-agentkit" install \
+            --repo "cedricmenec/alpha-binary" --checkout "$TARGET" --kit opencode-openspec \
+            --version 1.4.0 --source "$SOURCE" --source-commit 4f9a31f94888f20a2df7b4335ec7c0f5a70d869d \
+            --config "$CONFIG" --apply --expected-head "$HEAD_SHA" > "$RUNNER_TEMP/fresh-apply.json"
+          node "$SOURCE/bin/asf-agentkit" status --repo "cedricmenec/alpha-binary" --checkout "$TARGET" > "$RUNNER_TEMP/fresh-status.json"
+          node - "$RUNNER_TEMP/fresh-status.json" <<'NODE'
+          const fs=require('fs'); const v=JSON.parse(fs.readFileSync(process.argv[2]));
+          if (v.status !== 'hash-match') throw Error('Fresh install did not hash-match');
+          console.log('Fresh 1.4.0 install hash-match');
+          NODE
