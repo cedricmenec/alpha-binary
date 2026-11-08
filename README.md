@@ -193,4 +193,4 @@ The reference acceptance suite uses the checked-in PNGs under `test/fixtures/ref
 
 Node.js 26.13.0 LTS est épinglé dans .nvmrc et la CI. npm exige >=26.13.0 <27 via engine-strict. Utiliser npm ci puis npm run check.
 
-Le kit ASF OpenCode/OpenSpec 1.2.0 est épinglé au commit e2a372c1a8f3a32895a6254a99d6d94e68f64fa9. La PR de migration vérifie une véritable mise à niveau avec la CLI Node, l'idempotence, le retour au tree initial par revert et le refus des overlays modifiés. Aucun modèle payant n'est exécuté par cette qualification.
+Le kit ASF AgentKit OpenCode/OpenSpec 1.4.0 est installé à partir de la [release immuable](https://github.com/cedricmenec/asf-agent-kits/releases/tag/kits/opencode-openspec/v1.4.0), épinglée au commit `4f9a31f94888f20a2df7b4335ec7c0f5a70d869d`. Le profil OpenCode Direct reste co-installé séparément. La migration Node.js 1.2.0 a déjà été qualifiée : ses anciens scripts et workflows temporaires ne sont plus nécessaires. Les exécutions OpenCode restent manuelles et potentiellement payantes.
