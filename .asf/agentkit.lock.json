@@ -1,1 +1,24 @@
-{"configurationSha256":"f09d0ae99567598b94f4364861af8437c6711860d3eee37913339e104a473544","kitId":"opencode-openspec","managedFiles":{".asf/agentkit/manual-acceptance.md":"86c926a6dc18aec601d8403d184412750c154ee100b0b67203226f4d5625ec1f",".asf/agentkit/openspec-checklist.md":"df34a6a92edf7ba32915a491ea3feaf7062f25e712697052b0f942169e4c8c78",".asf/agentkit/opsx-sync-quality.md":"a03aa101198e22f67579d6f68b7bc476fb43a2642d46ec48dc2ff1bf4452b5cd",".asf/agentkit/runtime/budget.mjs":"8e9992d2bec36141e3f4636b98a13fe619f0bd1567c4473c960b1c8a7fe14a09",".asf/agentkit/runtime/checklist.mjs":"e51857f8bf88f46b4531fede4579f1bc9ce4ae7965acf5da7eaa147a25c4acc6",".asf/agentkit/runtime/model-policy.mjs":"36df510de03215911fe50d7d1956e34cd5655af671a31c071c004c6afec2ae86",".asf/agentkit/runtime/phase.sh":"1c755de732fcd1c760b587e35d4f3f2f32283954576bd91247cd61bd121f4435",".asf/agentkit/runtime/publish.sh":"cace9fcecd66c5507a9acc9bfc593fa453ffc0a7c56289f4160606c2d9865e6f",".asf/agentkit/runtime/request.mjs":"10f6236c11e49e31eaea868169d452850b3e529c6025bdc650ebb83272803b61",".asf/agentkit/runtime/scope.mjs":"c9427a4f9f3cafaa10043b72706f3b9b0dc81cd107d13e73309bfdbff804bc01",".asf/agentkit/runtime/stage.sh":"509a2aec51edec840bdb099e4d350bbada1a9fb6ed0451e8083d0e3113ebc536",".github/workflows/asf-agentkit-openspec.yml":"9cc2ae75ab3f937d770cef14e9c96f6d0c3a771bc25bda2bff4aed102a389c4b"},"schemaVersion":2,"sourceCommitSha":"97d6d453c8097b3d4b2b205d42c4568a013f2c2d","sourceRepository":"cedricmenec/asf-agent-kits","sourceTrust":"user-pinned-git-object-unattested","targetRepository":"cedricmenec/alpha-binary","version":"1.5.0"}
+{
+  "configurationSha256": "f09d0ae99567598b94f4364861af8437c6711860d3eee37913339e104a473544",
+  "kitId": "opencode-openspec",
+  "managedFiles": {
+    ".asf/agentkit/manual-acceptance.md": "86c926a6dc18aec601d8403d184412750c154ee100b0b67203226f4d5625ec1f",
+    ".asf/agentkit/openspec-checklist.md": "df34a6a92edf7ba32915a491ea3feaf7062f25e712697052b0f942169e4c8c78",
+    ".asf/agentkit/opsx-sync-quality.md": "a03aa101198e22f67579d6f68b7bc476fb43a2642d46ec48dc2ff1bf4452b5cd",
+    ".asf/agentkit/runtime/budget.mjs": "8e9992d2bec36141e3f4636b98a13fe619f0bd1567c4473c960b1c8a7fe14a09",
+    ".asf/agentkit/runtime/checklist.mjs": "e51857f8bf88f46b4531fede4579f1bc9ce4ae7965acf5da7eaa147a25c4acc6",
+    ".asf/agentkit/runtime/model-policy.mjs": "36df510de03215911fe50d7d1956e34cd5655af671a31c071c004c6afec2ae86",
+    ".asf/agentkit/runtime/phase.sh": "1c755de732fcd1c760b587e35d4f3f2f32283954576bd91247cd61bd121f4435",
+    ".asf/agentkit/runtime/publish.sh": "cace9fcecd66c5507a9acc9bfc593fa453ffc0a7c56289f4160606c2d9865e6f",
+    ".asf/agentkit/runtime/request.mjs": "10f6236c11e49e31eaea868169d452850b3e529c6025bdc650ebb83272803b61",
+    ".asf/agentkit/runtime/scope.mjs": "c9427a4f9f3cafaa10043b72706f3b9b0dc81cd107d13e73309bfdbff804bc01",
+    ".asf/agentkit/runtime/stage.sh": "509a2aec51edec840bdb099e4d350bbada1a9fb6ed0451e8083d0e3113ebc536",
+    ".github/workflows/asf-agentkit-openspec.yml": "813719d1683cad5d55ffd1641d5bf1eff72ea72ac3748d71281551d555932357"
+  },
+  "schemaVersion": 2,
+  "sourceCommitSha": "1ed67003319f572ef51022d3c2b843f9465d262d",
+  "sourceRepository": "cedricmenec/asf-agent-kits",
+  "sourceTrust": "user-pinned-git-object-unattested",
+  "targetRepository": "cedricmenec/alpha-binary",
+  "version": "1.5.1"
+}
